@@ -1,6 +1,8 @@
 #include "../include/paddle_entity.hpp"
 
-PaddleEntity::PaddleEntity(std::unique_ptr<PaddleController> controller, GameContext* ctx): GameEntity(ctx), m_controller(std::move(controller)) {}
+PaddleEntity::PaddleEntity(const char* id, std::unique_ptr<PaddleController> controller,
+                           GameContext* ctx)
+    : GameEntity(id, ctx), m_controller(std::move(controller)) {}
 
 void PaddleEntity::update(float dt) {
   m_controller->update(*this, dt);

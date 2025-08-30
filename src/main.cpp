@@ -1,5 +1,5 @@
-#include "../include/game_state.hpp"
 #include "../include/game_context.hpp"
+#include "../include/game_state.hpp"
 #include "../include/paddle_entity.hpp"
 
 #include <SDL2/SDL_events.h>
@@ -18,7 +18,7 @@ int main() {
     return -1;
   };
   game_state.create_renderer();
-  GameContext ctx(&game_state.window());
+  GameContext   ctx(&game_state.window());
   SDL_Renderer* renderer = game_state.renderer();
 
   const int   WINDOW_HEIGHT = game_state.window().get_height();
@@ -26,18 +26,22 @@ int main() {
   const float PADDLE_WIDTH  = 25.0f;
   const float PADDLE_HEIGHT = 100.0f;
 
-  PaddleEntity right_paddle(std::make_unique<RightPaddleController>(), &ctx);
+  PaddleEntity right_paddle("right_paddle", std::make_unique<RightPaddleController>(), &ctx);
+  right_paddle.set_side(PaddleSide::RIGHT);
   right_paddle.set_velocity({12.0f, 12.0f});
   right_paddle.set_dimension({25.0f, 100.0f});
   right_paddle.set_pos({WINDOW_WIDTH - 20 - right_paddle.dimension().get_h(),
                         (WINDOW_HEIGHT / 2.0f) - right_paddle.dimension().get_h()});
   right_paddle.set_direction(1);
 
-  PaddleEntity left_paddle(std::make_unique<LeftPaddleController>(), &ctx);
+  PaddleEntity left_paddle("left_paddle", std::make_unique<LeftPaddleController>(), &ctx);
   left_paddle.set_velocity({12.0f, 12.0f});
   left_paddle.set_dimension({25.0f, 100.0f});
   left_paddle.set_pos({20, (WINDOW_HEIGHT / 2.0f) - left_paddle.dimension().get_h()});
   left_paddle.set_direction(-1);
+
+  game_state.add_entity(&right_paddle);
+  game_state.add_entity(&left_paddle);
 
   int running = 1;
 
@@ -59,28 +63,6 @@ int main() {
   while (game_state.is_running()) {
     frame_start = SDL_GetTicks();
     game_state.handle_events();
-    while (SDL_PollEvent(&event)) {
-      switch (event.type) {
-        case SDL_QUIT: {
-          game_state.stop();
-          std::cout << "Quitting \n";
-          break;
-        }
-
-        case SDL_KEYDOWN: {
-          if (event.key.keysym.sym == SDLK_UP)
-            right_paddle.set_direction(-1);
-          if (event.key.keysym.sym == SDLK_DOWN)
-            right_paddle.set_direction(1);
-
-          if (event.key.keysym.sym == SDLK_w)
-            left_paddle.set_direction(-1);
-          if (event.key.keysym.sym == SDLK_s)
-            left_paddle.set_direction(1);
-          break;
-        }
-      }
-    }
     right_paddle.update(0);
     left_paddle.update(0);
 
@@ -124,10 +106,12 @@ int main() {
     //   ball_y_vel  = sin(bounce_angle) * speed;
     // }
 
-    SDL_Rect left_paddle_rect  = {(int)left_paddle.position().x, (int)left_paddle.position().y, (int)left_paddle.dimension().get_w(),
-                             (int)left_paddle.dimension().get_h()};
-    SDL_Rect right_paddle_rect  = {(int)right_paddle.position().x, (int)right_paddle.position().y, (int)right_paddle.dimension().get_w(),
-                    (int)right_paddle.dimension().get_h()};
+    SDL_Rect left_paddle_rect  = {(int)left_paddle.position().x, (int)left_paddle.position().y,
+                                  (int)left_paddle.dimension().get_w(),
+                                  (int)left_paddle.dimension().get_h()};
+    SDL_Rect right_paddle_rect = {(int)right_paddle.position().x, (int)right_paddle.position().y,
+                                  (int)right_paddle.dimension().get_w(),
+                                  (int)right_paddle.dimension().get_h()};
     // SDL_Rect ball         = {(int)ball_x, (int)ball_y, (int)BALL_SIZE, (int)BALL_SIZE};
 
     SDL_SetRenderDrawColor(renderer, 0, 0, 0, 255);

@@ -1,15 +1,19 @@
 #include "../include/game_state.hpp"
 
 #include "../include/game_window.hpp"
+#include "../include/paddle_entity.hpp"
 
 #include <SDL2/SDL.h>
+#include <SDL2/SDL_events.h>
 #include <SDL2/SDL_render.h>
 #include <SDL2/SDL_video.h>
 #include <iostream>
 #include <stdexcept>
 
 GameState::GameState(int window_width, int window_height)
-    : m_window(window_width, window_height), m_running(true) {}
+    : m_window(window_width, window_height), m_running(true) {
+  m_event = SDL_Event();
+}
 
 void GameState::create_renderer() {
   SDL_Window* w = m_window.window();
@@ -47,4 +51,38 @@ bool GameState::is_running() {
   return m_running;
 }
 
-void GameState::handle_events() {}
+void GameState::handle_events() {
+  while (SDL_PollEvent(&m_event)) {
+    switch (m_event.type) {
+      case SDL_QUIT: {
+        stop();
+        std::cout << "Quitting \n";
+        break;
+      }
+
+      case SDL_KEYDOWN: {
+        for (auto entity : m_entities) {
+          if (auto paddle = dynamic_cast<PaddleEntity*>(entity)) {
+            if (paddle->side == PaddleSide::RIGHT) {
+              if (m_event.key.keysym.sym == SDLK_UP)
+                std::cout << "here\n";
+              paddle->set_direction(-1);
+              if (m_event.key.keysym.sym == SDLK_DOWN)
+                paddle->set_direction(1);
+            } else {
+              if (m_event.key.keysym.sym == SDLK_w)
+                paddle->set_direction(-1);
+              if (m_event.key.keysym.sym == SDLK_s)
+                paddle->set_direction(1);
+            }
+          }
+        }
+        break;
+      }
+    }
+  }
+}
+
+void GameState::add_entity(GameEntity* entity) {
+  m_entities.push_back(entity);
+}

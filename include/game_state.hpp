@@ -1,16 +1,21 @@
 #pragma once
 
+#include "game_entity.hpp"
 #include "game_window.hpp"
 
+#include <SDL2/SDL_events.h>
 #include <SDL2/SDL_render.h>
 #include <SDL2/SDL_video.h>
+#include <vector>
 
 class GameState {
 
 private:
-  GameWindow    m_window;
-  SDL_Renderer* m_renderer;
-  bool          m_running;
+  GameWindow               m_window;
+  SDL_Renderer*            m_renderer;
+  bool                     m_running;
+  SDL_Event                m_event;
+  std::vector<GameEntity*> m_entities;
 
 public:
   GameState(int window_width, int window_height);
@@ -25,7 +30,6 @@ public:
   GameWindow&   window();
   SDL_Renderer* renderer();
   bool          is_running();
-  inline void stop() {
-    m_running = false;
-  }
+  inline void   stop() { m_running = false; }
+  void add_entity(GameEntity* entity);
 };

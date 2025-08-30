@@ -2,6 +2,11 @@
 
 #include <memory>
 
+enum PaddleSide {
+  LEFT,
+  RIGHT,
+};
+
 class PaddleController;
 
 class PaddleEntity : public GameEntity {
@@ -9,8 +14,12 @@ private:
   std::unique_ptr<PaddleController> m_controller;
 
 public:
-  PaddleEntity(std::unique_ptr<PaddleController> controller, GameContext* ctx);
-  void update(float dt) override;
+  PaddleEntity(const char* id, std::unique_ptr<PaddleController> controller, GameContext* ctx);
+  void        update(float dt) override;
+  inline void set_side(PaddleSide s) { side = s; }
+
+public:
+  PaddleSide side;
 };
 
 class PaddleController {
