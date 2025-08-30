@@ -1,7 +1,0 @@
-{
-	"InstallScripts" : 
-	[
-		"/home/guichina/dev/games/pong/build/release/cmake_install.cmake"
-	],
-	"Parallel" : false
-}

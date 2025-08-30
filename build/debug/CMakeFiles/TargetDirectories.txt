@@ -1,3 +1,0 @@
-/home/guichina/dev/games/pong/build/debug/CMakeFiles/pong.dir
-/home/guichina/dev/games/pong/build/debug/CMakeFiles/edit_cache.dir
-/home/guichina/dev/games/pong/build/debug/CMakeFiles/rebuild_cache.dir
