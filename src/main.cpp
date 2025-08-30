@@ -50,8 +50,8 @@ int main()  {
   float BALL_SIZE = 10.0f;
   float ball_y = (WINDOW_HEIGHT / 2.0f) - BALL_SIZE;
   float ball_x = (WINDOW_WIDTH / 2.0f) - BALL_SIZE;
-  float ball_x_vel = 5.0f;
-  float ball_y_vel = 5.0f;
+  float ball_x_vel = 10.0f;
+  float ball_y_vel = 7.0f;
 
   const int left_paddle_x = 20;
   const int right_paddle_x = WINDOW_WIDTH - left_paddle_x - PADDLE_WIDTH;
@@ -72,8 +72,6 @@ int main()  {
 
           if(event.key.keysym.sym == SDLK_w) left_paddle_direction = -1;
           if(event.key.keysym.sym == SDLK_s) left_paddle_direction = 1;
-          
-          if(event.key.keysym.sym == SDLK_SPACE) paddle_velocity += 2;
           break;
         }
       }
@@ -99,16 +97,30 @@ int main()  {
       ball_x >= left_paddle_x && 
       ball_y + BALL_SIZE >= left_paddle_y &&
       ball_y <= left_paddle_y + PADDLE_HEIGHT) {
-        float hitPos = (ball_y + BALL_SIZE/2.0f) - (left_paddle_y + PADDLE_HEIGHT/2.0f);
-        ball_y_vel = hitPos * 0.25f;
-        ball_x_vel *= -1;
+      float hit_pos = (ball_y + BALL_SIZE/2.0f) - (left_paddle_y + PADDLE_HEIGHT/2.0f);
+      float normalized_hit_pos = hit_pos / (PADDLE_HEIGHT/2.0f); // -1 (top) → +1 (bottom)
+      float MAX_BOUNCE_ANGLE = 75.0f * (M_PI / 180.0f);
+
+      float bounce_angle = normalized_hit_pos * MAX_BOUNCE_ANGLE;
+
+      float speed = sqrt(pow(ball_x_vel,2) + pow(ball_y_vel,2));
+      ball_x_vel = cos(bounce_angle) * speed;
+      ball_y_vel = sin(bounce_angle) * speed;
     }
 
     if(ball_x <= right_paddle_x + PADDLE_WIDTH &&
       ball_x >= right_paddle_x && 
       ball_y + BALL_SIZE >= right_paddle_y &&
       ball_y <= right_paddle_y + PADDLE_HEIGHT) {
-        ball_x_vel *= -1;
+      float hit_pos = (ball_y + BALL_SIZE/2.0f) - (right_paddle_y + PADDLE_HEIGHT/2.0f);
+      float normalized_hit_pos = hit_pos / (PADDLE_HEIGHT/2.0f); // -1 (top) → +1 (bottom)
+      float MAX_BOUNCE_ANGLE = 75.0f * (M_PI / 180.0f);
+
+      float bounce_angle = normalized_hit_pos * MAX_BOUNCE_ANGLE;
+
+      float speed = sqrt(pow(ball_x_vel,2) + pow(ball_y_vel,2));
+      ball_x_vel = (cos(bounce_angle) * speed) * -1;
+      ball_y_vel = sin(bounce_angle) * speed;
     }
 
     if(right_paddle_y < 0 || right_paddle_y + PADDLE_HEIGHT >= WINDOW_HEIGHT) {
