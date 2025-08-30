@@ -3,20 +3,22 @@
 #include <SDL2/SDL.h>
 #include <SDL2/SDL_render.h>
 #include <SDL2/SDL_video.h>
+#include <iostream>
 #include <stdexcept>
 
-GameState::GameState() {}
-
-void GameState::create_window(int window_width, int window_height) {
-  m_window = GameWindow(window_width, window_height);
+GameState::GameState(int window_width, int window_height): m_window(window_width, window_height) {
 }
 
 void GameState::create_renderer() {
-  SDL_Renderer* renderer = SDL_CreateRenderer(m_window.window(), 0, SDL_RENDERER_ACCELERATED);
-  if(!renderer) {
-    std::runtime_error("Failed to create renderer");
+  SDL_Window* w = m_window.window();
+  if (!w) {
+    throw std::runtime_error("Window not initialized");
   }
-  m_renderer = renderer;
+  m_renderer = SDL_CreateRenderer(w, -1, SDL_RENDERER_ACCELERATED | SDL_RENDERER_PRESENTVSYNC);
+  if (!m_renderer) {
+      std::cerr << "SDL Error: " << SDL_GetError() << std::endl;
+      throw std::runtime_error("Failed to create renderer");
+  }
 }
 
 int GameState::init_resources() {
@@ -26,7 +28,7 @@ int GameState::init_resources() {
   return 0;
 }
 
-GameWindow GameState::window() {
+GameWindow& GameState::window() {
   return m_window;
 }
 

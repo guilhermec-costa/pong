@@ -9,18 +9,17 @@
 #include "../include/game_state.hpp"
 
 int main()  {
-  GameState game_state;
+  GameState game_state(900, 600);
   if(game_state.init_resources() < 0) {
     return -1;
   };
-  game_state.create_window(800, 600);
   game_state.create_renderer();
   SDL_Renderer* renderer = game_state.renderer();
 
   const int WINDOW_HEIGHT  = game_state.window().get_height();
   const int WINDOW_WIDTH = game_state.window().get_width();
-  const float PADDLE_WIDTH = 20.0f;
-  const float PADDLE_HEIGHT = 150.0f;
+  const float PADDLE_WIDTH = 25.0f;
+  const float PADDLE_HEIGHT = 100.0f;
 
   int running = 1;
 
@@ -30,19 +29,19 @@ int main()  {
   int right_paddle_direction = 1;
   float right_paddle_y = (WINDOW_HEIGHT / 2.0f) - PADDLE_HEIGHT;
 
-  float paddle_velocity = 8.0f;
+  float paddle_velocity = 12.0f;
 
-  const int FPS = 60;
+  const int FPS = 120;
   const int MS_FRAME_DELAY = 1000 / FPS;
   Uint32 frame_start;
   int frame_time;
 
   // ball logic 
-  float BALL_SIZE = 10.0f;
+  float BALL_SIZE = 20.0f;
   float ball_y = (WINDOW_HEIGHT / 2.0f) - BALL_SIZE;
   float ball_x = (WINDOW_WIDTH / 2.0f) - BALL_SIZE;
-  float ball_x_vel = 10.0f;
-  float ball_y_vel = 7.0f;
+  float ball_x_vel = 0.0f;
+  float ball_y_vel = 0.0f;
 
   const int left_paddle_x = 20;
   const int right_paddle_x = WINDOW_WIDTH - left_paddle_x - PADDLE_WIDTH;
@@ -55,6 +54,7 @@ int main()  {
         case SDL_QUIT: {
           running = false;
           std::cout << "Quitting \n";
+          break;
         }
 
         case SDL_KEYDOWN: {
@@ -67,8 +67,17 @@ int main()  {
         }
       }
     }
+    if(right_paddle_y < 0 || right_paddle_y + PADDLE_HEIGHT >= WINDOW_HEIGHT) {
+      right_paddle_direction *= -1;
+    }
+
+    if(left_paddle_y < 0 || left_paddle_y + PADDLE_HEIGHT >= WINDOW_HEIGHT) {
+      left_paddle_direction *= -1;
+    }
+
     right_paddle_y += right_paddle_direction *  paddle_velocity;
     left_paddle_y += left_paddle_direction *  paddle_velocity;
+
     ball_x += ball_x_vel;
     ball_y += ball_y_vel;
 
@@ -112,14 +121,6 @@ int main()  {
       float speed = sqrt(pow(ball_x_vel,2) + pow(ball_y_vel,2));
       ball_x_vel = (cos(bounce_angle) * speed) * -1;
       ball_y_vel = sin(bounce_angle) * speed;
-    }
-
-    if(right_paddle_y < 0 || right_paddle_y + PADDLE_HEIGHT >= WINDOW_HEIGHT) {
-      right_paddle_direction *= -1;
-    }
-
-    if(left_paddle_y < 0 || left_paddle_y + PADDLE_HEIGHT >= WINDOW_HEIGHT) {
-      left_paddle_direction *= -1;
     }
 
     SDL_Rect left_paddle = {left_paddle_x, (int)left_paddle_y, (int)PADDLE_WIDTH, (int)PADDLE_HEIGHT};
