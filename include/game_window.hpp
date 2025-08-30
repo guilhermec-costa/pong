@@ -4,18 +4,18 @@
 
 class GameWindow {
 private:
-  int m_width;
-  int m_height;
+  int         m_width;
+  int         m_height;
   SDL_Window* m_window;
 
 public:
   GameWindow();
   GameWindow(int width, int height);
-  GameWindow(const GameWindow&) = delete;
+  GameWindow(const GameWindow&)            = delete;
   GameWindow& operator=(const GameWindow&) = delete;
   ~GameWindow();
 
-  int get_width();
-  int get_height();
+  int         get_width();
+  int         get_height();
   SDL_Window* window();
 };

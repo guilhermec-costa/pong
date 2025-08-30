@@ -2,6 +2,9 @@ BUILD_DIR = build
 EXEC_RELEASE = $(BUILD_DIR)/release/bin/pong
 EXEC_DEBUG = $(BUILD_DIR)/debug/bin/pong
 
+SRCS := $(shell find src -name "*.cpp")
+HEADERS := $(shell find include -name "*.hpp")
+
 buildr:
 	@cmake -S . -B $(BUILD_DIR)/release -DCMAKE_BUILD_TYPE=Release
 	@cmake --build $(BUILD_DIR)/release
@@ -15,3 +18,7 @@ buildd:
 
 rund:
 	@$(EXEC_DEBUG)
+
+fmt:
+	clang-format -i $(SRCS) $(HEADERS)
+	@echo "Formatted .cpp and .hpp files"
