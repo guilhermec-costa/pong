@@ -3,35 +3,26 @@
 #include <SDL2/SDL_stdinc.h>
 #include <SDL2/SDL_timer.h>
 #include <iostream>
-#include "SDL2/SDL.h"
 #include <SDL2/SDL_events.h>
 #include <SDL2/SDL_render.h>
 #include <SDL2/SDL_video.h>
-#include <ctime>
+#include "../include/game_state.hpp"
 
 int main()  {
-  int WINDOW_HEIGHT = 600;
-  int WINDOW_WIDTH = 900;
-
-  srand(time(NULL));
-  if(SDL_Init(SDL_INIT_VIDEO) < 0) {
+  GameState game_state;
+  if(game_state.init_resources() < 0) {
     return -1;
-  }
+  };
+  game_state.create_window(800, 600);
+  game_state.create_renderer();
+  SDL_Renderer* renderer = game_state.renderer();
 
-  SDL_Window* window = SDL_CreateWindow("my window", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, WINDOW_WIDTH, WINDOW_HEIGHT, 0);
-  if(!window) {
-    return -1;
-  }
-
-  SDL_Renderer* renderer = SDL_CreateRenderer(window, 0, SDL_RENDERER_ACCELERATED);
-  if(!renderer) {
-    return -1;
-  }
-
-  int running = 1;
-
+  const int WINDOW_HEIGHT  = game_state.window().get_height();
+  const int WINDOW_WIDTH = game_state.window().get_width();
   const float PADDLE_WIDTH = 20.0f;
   const float PADDLE_HEIGHT = 150.0f;
+
+  int running = 1;
 
   int left_paddle_direction = -1;
   float left_paddle_y  = (WINDOW_HEIGHT / 2.0f) - PADDLE_HEIGHT;
@@ -154,9 +145,6 @@ int main()  {
       SDL_Delay(MS_FRAME_DELAY - frame_time);
     }
   }
-  SDL_DestroyRenderer(renderer);
-  SDL_DestroyWindow(window);
-  SDL_Quit();
   return 0;
 }
 
