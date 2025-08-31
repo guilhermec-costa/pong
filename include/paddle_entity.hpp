@@ -23,6 +23,7 @@ public:
 
 public:
   PaddleSide side;
+  int score = 0;
 };
 
 class PaddleController {
