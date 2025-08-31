@@ -1,60 +1,47 @@
 #include "../include/ball_entity.hpp"
-#include <iostream>
 
 BallEntity::BallEntity(const char* id, GameContext* ctx) : GameEntity(id, ctx) {};
 
 void BallEntity::update(float dt) {
-  auto          window       = get_ctx()->window();
-  PaddleEntity* left_paddle  = this->left_paddle;
-  PaddleEntity* right_paddle = this->right_paddle;
-  position.x += velocity.x * dt;
-  position.y += velocity.y * dt;
+    auto window = get_ctx()->window();
 
-  if (position.y < 0 || position.y + dimension.get_w() >= window->get_height()) {
-    velocity.y *= -1;
-  }
+    position.x += velocity.x * dt;
+    position.y += velocity.y * dt;
 
-  if (position.x < 0 || position.x > window->get_width()) {
-    position.x = window->get_width() / 2.0f;
-    position.y = window->get_height() / 2.0f;
-    velocity.y = 5.0f;
-    velocity.x *= -1;
-  }
+    if (position.y < 5 || position.y + dimension.get_h() >= window->get_height() - 5) {
+        velocity.y *= -1;
+    }
 
-  if (position.x <= left_paddle->position.x + left_paddle->dimension.get_w() &&
-      position.x >= left_paddle->position.x &&
-      position.y + dimension.get_w() >= left_paddle->position.y &&
-      position.y <= left_paddle->position.y + left_paddle->dimension.get_h()) {
-    float hit_pos = (position.y + dimension.get_w() / 2.0f) -
-                    (left_paddle->position.y + left_paddle->dimension.get_h() / 2.0f);
-    float normalized_hit_pos = hit_pos / (left_paddle->dimension.get_h() / 2.0f);
-    float MAX_BOUNCE_ANGLE   = 50.0f * (M_PI / 180.0f);
+    if (position.x < 0 || position.x > window->get_width()) {
+        reset();
+    }
 
-    float bounce_angle = normalized_hit_pos * MAX_BOUNCE_ANGLE;
+    auto check_collision = [&](PaddleEntity* paddle, bool invert_x = false) {
+        Vector2& paddle_pos = paddle->get_position();
+        Dimension& paddle_dim = paddle->get_dimension();
 
-    float speed = sqrt(pow(velocity.x, 2) + pow(velocity.y, 2));
-    velocity.x  = cos(bounce_angle) * speed;
-    velocity.y  = sin(bounce_angle) * speed;
-    left_paddle->score++;
-  }
+        if (position.x <= paddle_pos.x + paddle_dim.get_w() &&
+            position.x >= paddle_pos.x &&
+            position.y + dimension.get_h() >= paddle_pos.y &&
+            position.y <= paddle_pos.y + paddle_dim.get_h()) {
 
-  if (position.x <= right_paddle->position.x + right_paddle->dimension.get_w() &&
-      position.x >= right_paddle->position.x &&
-      position.y + dimension.get_w() >= right_paddle->position.y &&
-      position.y <= right_paddle->position.y + right_paddle->dimension.get_h()) {
-    float hit_pos = (position.y + dimension.get_w() / 2.0f) -
-                    (right_paddle->position.y + right_paddle->dimension.get_h() / 2.0f);
-    float normalized_hit_pos = hit_pos / (right_paddle->dimension.get_h() / 2.0f);
-    float MAX_BOUNCE_ANGLE   = 50.0f * (M_PI / 180.0f);
+            float hit_pos = (position.y + dimension.get_h() / 2.0f) -
+                            (paddle_pos.y + paddle_dim.get_h() / 2.0f);
+            float normalized_hit_pos = hit_pos / (paddle_dim.get_h() / 2.0f);
+            float MAX_BOUNCE_ANGLE = 50.0f * (M_PI / 180.0f);
 
-    float bounce_angle = normalized_hit_pos * MAX_BOUNCE_ANGLE;
+            float bounce_angle = normalized_hit_pos * MAX_BOUNCE_ANGLE;
+            float speed = sqrt(pow(velocity.x, 2) + pow(velocity.y, 2));
 
-    float speed = sqrt(pow(velocity.x, 2) + pow(velocity.y, 2));
-    velocity.x  = -(cos(bounce_angle) * speed);
-    velocity.y  = sin(bounce_angle) * speed;
-    left_paddle->score++;
-  }
+            velocity.x = (invert_x ? -1 : 1) * cos(bounce_angle) * speed;
+            velocity.y = sin(bounce_angle) * speed;
+        }
+    };
+
+    check_collision(left_paddle, false);
+    check_collision(right_paddle, true);
 }
+
 
 void BallEntity::render() {
   SDL_Renderer* renderer = get_ctx()->renderer();
@@ -62,4 +49,13 @@ void BallEntity::render() {
                             (int)dimension.get_h()};
   SDL_SetRenderDrawColor(renderer, 255, 255, 0, 255);
   SDL_RenderFillRect(renderer, &ball);
+}
+
+void BallEntity::reset() {
+  auto window = this->get_ctx()->window();
+  position.x = window->get_width() / 2.0f;
+  position.y = window->get_height() / 2.0f;
+  velocity.y = 500.0f;
+  velocity.x = 500.0f;
+  direction = -direction;
 }

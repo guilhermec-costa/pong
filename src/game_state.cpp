@@ -33,7 +33,6 @@ void GameState::create_renderer() {
 }
 
 int GameState::init_resources() {
-  std::cout << "here" << std::endl;
   if (SDL_Init(SDL_INIT_VIDEO) < 0) {
     return -1;
   }
@@ -68,7 +67,11 @@ GameState::~GameState() {
   if (m_text_texture) {
     SDL_DestroyTexture(m_text_texture);
   }
+  if(m_font) {
+    TTF_CloseFont(m_font);
+  }
   SDL_DestroyRenderer(m_renderer);
+  SDL_DestroyWindow(m_window.window());
   SDL_Quit();
 }
 
@@ -86,8 +89,8 @@ void GameState::handle_events() {
   while (SDL_PollEvent(&m_event)) {
     switch (m_event.type) {
       case SDL_QUIT: {
-        stop();
         std::cout << "Quitting \n";
+        stop();
         break;
       }
 
@@ -134,7 +137,6 @@ void GameState::render() {
   SDL_SetRenderDrawColor(m_renderer, 0, 0, 0, 255);
   SDL_RenderClear(m_renderer);
   if (m_text_texture) {
-    std::cout << "Texture initiated\n";
     SDL_RenderCopy(m_renderer, m_text_texture, nullptr, &m_text_rect);
   }
   for (auto entity : m_entities) {

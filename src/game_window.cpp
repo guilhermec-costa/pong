@@ -26,7 +26,3 @@ int GameWindow::get_width() {
 int GameWindow::get_height() {
   return m_height;
 }
-
-GameWindow::~GameWindow() {
-  SDL_DestroyWindow(m_window);
-}

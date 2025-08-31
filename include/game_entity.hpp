@@ -15,6 +15,11 @@ public:
   GameEntity(Vector2 pos, Vector2 vel) : position(pos), velocity(vel), direction(0) {}
   inline GameContext* get_ctx() const { return m_ctx; }
 
+  Vector2& get_position() { return position; }
+  Vector2& get_velocity() { return velocity; }
+  Dimension& get_dimension() { return dimension; }
+  int& get_direction() { return direction; }
+
   virtual void update(float dt) = 0;
   virtual void render()         = 0;
 

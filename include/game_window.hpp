@@ -13,7 +13,6 @@ public:
   GameWindow(int width, int height);
   GameWindow(const GameWindow&)            = delete;
   GameWindow& operator=(const GameWindow&) = delete;
-  ~GameWindow();
 
   int         get_width();
   int         get_height();
