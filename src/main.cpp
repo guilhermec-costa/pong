@@ -37,6 +37,7 @@ int main() {
   left_paddle.direction = -1;
 
   BallEntity ball("ball", &ctx);
+  ball.direction = 1;
   ball.dimension = Dimension({15.0f, 15.0f});
   ball.velocity  = Vector2({500.0f, 650.0f});
   ball.position  = Vector2({(WINDOW_HEIGHT / 2.0f) - ball.dimension.get_w(),

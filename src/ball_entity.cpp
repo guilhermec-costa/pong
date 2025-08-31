@@ -5,15 +5,15 @@ BallEntity::BallEntity(const char* id, GameContext* ctx) : GameEntity(id, ctx) {
 void BallEntity::update(float dt) {
     auto window = get_ctx()->window();
 
-    position.x += velocity.x * dt;
-    position.y += velocity.y * dt;
+    position.x += velocity.x * direction * dt;
+    position.y += velocity.y * direction * dt;
 
     if (position.y < 5 || position.y + dimension.get_h() >= window->get_height() - 5) {
         velocity.y *= -1;
     }
 
-    if (position.x < 0 || position.x > window->get_width()) {
-        reset();
+    if (position.x < 5 || position.x > window->get_width() - 5) {
+        reset(direction);
     }
 
     auto check_collision = [&](PaddleEntity* paddle, bool invert_x = false) {
@@ -51,11 +51,11 @@ void BallEntity::render() {
   SDL_RenderFillRect(renderer, &ball);
 }
 
-void BallEntity::reset() {
+void BallEntity::reset(float current_direction) {
   auto window = this->get_ctx()->window();
   position.x = window->get_width() / 2.0f;
   position.y = window->get_height() / 2.0f;
   velocity.y = 500.0f;
   velocity.x = 500.0f;
-  direction = -direction;
+  direction = current_direction * -1;
 }
