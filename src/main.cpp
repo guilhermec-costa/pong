@@ -9,19 +9,17 @@
 #include <SDL2/SDL_render.h>
 #include <SDL2/SDL_stdinc.h>
 #include <SDL2/SDL_timer.h>
+#include <SDL2/SDL_ttf.h>
 #include <SDL2/SDL_video.h>
 #include <memory>
 
 int main() {
   GameState game_state(1440, 900);
-  if (game_state.init_resources() < 0) {
-    return -1;
-  };
-  game_state.create_renderer();
   SDL_Renderer* renderer = game_state.renderer();
-  GameContext   ctx(&game_state.window(), renderer);
-  const int     WINDOW_HEIGHT = game_state.window().get_height();
-  const int     WINDOW_WIDTH  = game_state.window().get_width();
+
+  GameContext ctx(&game_state.window(), renderer);
+  const int   WINDOW_HEIGHT = game_state.window().get_height();
+  const int   WINDOW_WIDTH  = game_state.window().get_width();
 
   PaddleEntity right_paddle("right_paddle", std::make_unique<RightPaddleController>(), &ctx);
   right_paddle.set_side(PaddleSide::RIGHT);
@@ -50,6 +48,7 @@ int main() {
   game_state.add_entity(&left_paddle);
   game_state.add_entity(&ball);
 
+  SDL_Rect  text_rect      = {100, 100, 100, 100};
   const int FPS            = 60;
   const int MS_FRAME_DELAY = 1000 / FPS;
 
@@ -70,5 +69,6 @@ int main() {
       SDL_Delay(MS_FRAME_DELAY - frame_time);
     }
   }
+  TTF_Quit();
   return 0;
 }

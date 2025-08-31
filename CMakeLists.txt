@@ -10,10 +10,13 @@ file(GLOB_RECURSE SOURCES "src/*.cpp" "src/**/*.cpp")
 include_directories(include)
 
 find_package(SDL2 REQUIRED)
-include_directories(${SDL2_INCLUDE_DIRS})
+find_package(SDL2_ttf REQUIRED)
+
+include_directories(${SDL2_INCLUDE_DIRS} ${SDL2TTF_INCLUDE_DIRS})
 
 # Criar executável
 add_executable(pong ${SOURCES})
+add_definitions(-DPROJECT_SOURCE_DIR="${CMAKE_SOURCE_DIR}")
 
 # Linkar SDL2
-target_link_libraries(pong ${SDL2_LIBRARIES})
+target_link_libraries(pong PRIVATE SDL2 SDL2_ttf)

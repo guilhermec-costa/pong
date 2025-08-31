@@ -1,3 +1,5 @@
+#include <ostream>
+
 typedef struct Vector2 {
   float x, y;
 
@@ -5,6 +7,12 @@ typedef struct Vector2 {
   Vector2(float x, float y) : x(x), y(y) {}
 
   Vector2 operator*(float scalar) const { return Vector2(x * scalar, y * scalar); }
+
+  friend std::ostream& operator<<(std::ostream& os, const Vector2& v) {
+    os << "X: " << v.x << " | Y: " << v.y << "\n";
+    return os;
+  };
+
 } Vector2;
 
 typedef struct Dimension {

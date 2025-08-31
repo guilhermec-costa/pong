@@ -1,4 +1,5 @@
 #include "../include/ball_entity.hpp"
+#include <iostream>
 
 BallEntity::BallEntity(const char* id, GameContext* ctx) : GameEntity(id, ctx) {};
 
@@ -49,7 +50,7 @@ void BallEntity::update(float dt) {
     float bounce_angle = normalized_hit_pos * MAX_BOUNCE_ANGLE;
 
     float speed = sqrt(pow(velocity.x, 2) + pow(velocity.y, 2));
-    velocity.x  = (cos(bounce_angle) * speed) * -1;
+    velocity.x  = -(cos(bounce_angle) * speed);
     velocity.y  = sin(bounce_angle) * speed;
     left_paddle->score++;
   }
