@@ -20,35 +20,26 @@ int main() {
   game_state.create_renderer();
   GameContext   ctx(&game_state.window());
   SDL_Renderer* renderer = game_state.renderer();
-
   const int   WINDOW_HEIGHT = game_state.window().get_height();
   const int   WINDOW_WIDTH  = game_state.window().get_width();
-  const float PADDLE_WIDTH  = 25.0f;
-  const float PADDLE_HEIGHT = 100.0f;
 
   PaddleEntity right_paddle("right_paddle", std::make_unique<RightPaddleController>(), &ctx);
   right_paddle.set_side(PaddleSide::RIGHT);
-  right_paddle.set_velocity({12.0f, 12.0f});
-  right_paddle.set_dimension({25.0f, 100.0f});
-  right_paddle.set_pos({WINDOW_WIDTH - 20 - right_paddle.dimension().get_h(),
-                        (WINDOW_HEIGHT / 2.0f) - right_paddle.dimension().get_h()});
-  right_paddle.set_direction(1);
+  right_paddle.velocity = Vector2({0.0f, 620.0f});
+  right_paddle.dimension = Dimension({25.0f, 100.0f});
+  right_paddle.position = Vector2({WINDOW_WIDTH - 20 - right_paddle.dimension.get_w(),
+                        (WINDOW_HEIGHT / 2.0f) - right_paddle.dimension.get_h()});
+  right_paddle.direction = 1;
 
   PaddleEntity left_paddle("left_paddle", std::make_unique<LeftPaddleController>(), &ctx);
-  left_paddle.set_velocity({12.0f, 12.0f});
-  left_paddle.set_dimension({25.0f, 100.0f});
-  left_paddle.set_pos({20, (WINDOW_HEIGHT / 2.0f) - left_paddle.dimension().get_h()});
-  left_paddle.set_direction(-1);
+  left_paddle.set_side(PaddleSide::LEFT);
+  left_paddle.velocity = Vector2({0.0f, 620.0f});
+  left_paddle.dimension = Dimension({25.0f, 100.0f});
+  left_paddle.position = Vector2({20, (WINDOW_HEIGHT / 2.0f) - left_paddle.dimension.get_h()});
+  left_paddle.direction = -1;
 
   game_state.add_entity(&right_paddle);
   game_state.add_entity(&left_paddle);
-
-  int running = 1;
-
-  const int FPS            = 120;
-  const int MS_FRAME_DELAY = 1000 / FPS;
-  Uint32    frame_start;
-  int       frame_time;
 
   // ball logic
   float BALL_SIZE  = 20.0f;
@@ -57,14 +48,20 @@ int main() {
   float ball_x_vel = 9.0f;
   float ball_y_vel = 5.0f;
 
-  const int left_paddle_x = 20;
+  const int FPS            = 120;
+  const int MS_FRAME_DELAY = 1000 / FPS;
 
-  SDL_Event event;
+  Uint32    frame_start;
+  Uint32 last_time = SDL_GetTicks();
+  int       frame_time;
   while (game_state.is_running()) {
     frame_start = SDL_GetTicks();
+    float dt = (frame_start - last_time) / 1000.0f;
+    last_time = frame_start;
+
     game_state.handle_events();
-    right_paddle.update(0);
-    left_paddle.update(0);
+    right_paddle.update(dt);
+    left_paddle.update(dt);
 
     // ball_x += ball_x_vel;
     // ball_y += ball_y_vel;
@@ -106,12 +103,12 @@ int main() {
     //   ball_y_vel  = sin(bounce_angle) * speed;
     // }
 
-    SDL_Rect left_paddle_rect  = {(int)left_paddle.position().x, (int)left_paddle.position().y,
-                                  (int)left_paddle.dimension().get_w(),
-                                  (int)left_paddle.dimension().get_h()};
-    SDL_Rect right_paddle_rect = {(int)right_paddle.position().x, (int)right_paddle.position().y,
-                                  (int)right_paddle.dimension().get_w(),
-                                  (int)right_paddle.dimension().get_h()};
+    SDL_Rect left_paddle_rect  = {(int)left_paddle.position.x, (int)left_paddle.position.y,
+                                  (int)left_paddle.dimension.get_w(),
+                                  (int)left_paddle.dimension.get_h()};
+    SDL_Rect right_paddle_rect = {(int)right_paddle.position.x, (int)right_paddle.position.y,
+                                  (int)right_paddle.dimension.get_w(),
+                                  (int)right_paddle.dimension.get_h()};
     // SDL_Rect ball         = {(int)ball_x, (int)ball_y, (int)BALL_SIZE, (int)BALL_SIZE};
 
     SDL_SetRenderDrawColor(renderer, 0, 0, 0, 255);

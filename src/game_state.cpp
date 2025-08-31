@@ -64,16 +64,17 @@ void GameState::handle_events() {
         for (auto entity : m_entities) {
           if (auto paddle = dynamic_cast<PaddleEntity*>(entity)) {
             if (paddle->side == PaddleSide::RIGHT) {
-              if (m_event.key.keysym.sym == SDLK_UP)
-                std::cout << "here\n";
-              paddle->set_direction(-1);
-              if (m_event.key.keysym.sym == SDLK_DOWN)
-                paddle->set_direction(1);
+              if (m_event.key.keysym.sym == SDLK_UP) {
+                paddle->direction = -1;
+              }
+              if (m_event.key.keysym.sym == SDLK_DOWN) {
+                paddle->direction = 1;
+              }
             } else {
               if (m_event.key.keysym.sym == SDLK_w)
-                paddle->set_direction(-1);
+                paddle->direction = -1;
               if (m_event.key.keysym.sym == SDLK_s)
-                paddle->set_direction(1);
+                paddle->direction = 1;
             }
           }
         }
