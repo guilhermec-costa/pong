@@ -3,11 +3,13 @@
 #include "game_window.hpp"
 
 #include <SDL2/SDL_render.h>
+#include <SDL2/SDL_ttf.h>
 
 class GameContext {
 private:
-  GameWindow*   m_window;
-  SDL_Renderer* m_renderer;
+  GameWindow*   m_window   = nullptr;
+  SDL_Renderer* m_renderer = nullptr;
+  TTF_Font*     font       = nullptr;
 
 public:
   GameContext(GameContext&) = delete;

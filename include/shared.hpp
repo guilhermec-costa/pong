@@ -6,9 +6,7 @@ typedef struct Vector2 {
 
   Vector2() : x(0), y(0) {};
   Vector2(float x, float y) : x(x), y(y) {};
-  Vector2(const Vector2& v) {
-    std::cout << "Copying vector\n";
-  };
+  Vector2(const Vector2& v) { std::cout << "Copying vector\n"; };
 
   Vector2 operator*(float scalar) const { return Vector2(x * scalar, y * scalar); }
 

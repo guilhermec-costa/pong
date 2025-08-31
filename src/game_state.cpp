@@ -25,7 +25,7 @@ void GameState::create_renderer() {
   if (!w) {
     throw std::runtime_error("Window not initialized");
   }
-  m_renderer = SDL_CreateRenderer(w, -1, SDL_RENDERER_ACCELERATED | SDL_RENDERER_PRESENTVSYNC);
+  m_renderer = SDL_CreateRenderer(w, -1, SDL_RENDERER_ACCELERATED);
   if (!m_renderer) {
     std::cerr << "SDL Error: " << SDL_GetError() << std::endl;
     throw std::runtime_error("Failed to create renderer");
@@ -39,19 +39,6 @@ int GameState::init_resources() {
   if (TTF_Init() < 0) {
     return -1;
   }
-  #ifdef PROJECT_SOURCE_DIR
-    std::string font_path = std::string(PROJECT_SOURCE_DIR) + "/assets/fonts/OpenSans-Regular.ttf";
-    m_font = TTF_OpenFont(font_path.c_str(), 12);
-    std::cout << "Font: " << m_font << "\n";
-    if (m_font == nullptr) {
-      std::cerr << "SDL TTF Error: " << TTF_GetError() << std::endl;
-      throw std::runtime_error("Failed to create font");
-      return -1;
-    }
-    init_text("Testing text", 100, 100);
-  #else
-    #error "PROJECT_SOURCE_DIR not defined. Cannot locate assets/fonts/OpenSans-Regular.ttf"
-  #endif
   return 0;
 }
 
@@ -64,12 +51,6 @@ SDL_Renderer* GameState::renderer() {
 }
 
 GameState::~GameState() {
-  if (m_text_texture) {
-    SDL_DestroyTexture(m_text_texture);
-  }
-  if(m_font) {
-    TTF_CloseFont(m_font);
-  }
   SDL_DestroyRenderer(m_renderer);
   SDL_DestroyWindow(m_window.window());
   SDL_Quit();
@@ -122,22 +103,25 @@ void GameState::add_entity(GameEntity* entity) {
   m_entities.push_back(entity);
 }
 
-void GameState::init_text(const std::string& str, int x, int y) {
-  SDL_Surface* sfc = TTF_RenderText_Solid(m_font, str.c_str(), {255, 255, 255});
-  m_text_texture   = SDL_CreateTextureFromSurface(m_renderer, sfc);
-  if(!m_text_texture) {
-    std::cerr << "Failed to initiate font texture: " << TTF_GetError() << std::endl;
-    throw std::runtime_error("Error initiating font");
-  }
-  m_text_rect      = {x, y, 100, 100};
-  SDL_FreeSurface(sfc);
-}
-
 void GameState::render() {
+  const int win_height = m_window.get_height();
+  const int win_width  = m_window.get_width();
+  const int rect_w     = 6;
+  const int rect_h     = 40;
+  const int gap        = 10;
+
+  std::vector<SDL_Rect> rects;
+  int                   y = 10;
+  while (y + rect_h <= win_height) {
+    rects.push_back({(win_width / 2) - (rect_w / 2), y, rect_w, rect_h});
+    y += rect_h + gap;
+  }
+
   SDL_SetRenderDrawColor(m_renderer, 0, 0, 0, 255);
   SDL_RenderClear(m_renderer);
-  if (m_text_texture) {
-    SDL_RenderCopy(m_renderer, m_text_texture, nullptr, &m_text_rect);
+  SDL_SetRenderDrawColor(m_renderer, 255, 255, 255, 255);
+  for (const auto& r : rects) {
+    SDL_RenderFillRect(m_renderer, &r);
   }
   for (auto entity : m_entities) {
     entity->render();

@@ -14,5 +14,5 @@ public:
   inline void set_right_paddle(PaddleEntity* paddle) { right_paddle = paddle; };
   void        update(float dt) override;
   void        render() override;
-  void reset(float current_direction);
+  void        reset(float current_direction);
 };

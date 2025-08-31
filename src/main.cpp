@@ -13,35 +13,44 @@
 #include <SDL2/SDL_video.h>
 #include <memory>
 
+class FPSCounter {
+public:
+    FPSCounter() : frame_count(0), fps(0), last_time(SDL_GetTicks()) {}
+
+    void frame_rendered() {
+        frame_count++;
+        Uint32 current_time = SDL_GetTicks();
+
+        if (current_time - last_time >= 1000) {
+            fps = frame_count;
+            frame_count = 0;
+            last_time = current_time;
+        }
+    }
+
+    int getFPS() const { return fps; }
+
+private:
+    int frame_count;
+    int fps;
+    Uint32 last_time;
+};
+
 int main() {
-  GameState game_state(1440, 900);
+  GameState     game_state(1440, 900);
   SDL_Renderer* renderer = game_state.renderer();
 
   GameContext ctx(&game_state.window(), renderer);
   const int   WINDOW_HEIGHT = game_state.window().get_height();
   const int   WINDOW_WIDTH  = game_state.window().get_width();
 
-  PaddleEntity right_paddle("right_paddle", std::make_unique<RightPaddleController>(), &ctx);
-  right_paddle.set_side(PaddleSide::RIGHT);
-  right_paddle.velocity  = Vector2({0.0f, 750.0f});
-  right_paddle.dimension = Dimension({25.0f, 180.0f});
-  right_paddle.position  = Vector2({WINDOW_WIDTH - 20 - right_paddle.dimension.get_w(),
-                                    (WINDOW_HEIGHT / 2.0f) - right_paddle.dimension.get_h()});
-  right_paddle.direction = 1;
-
-  PaddleEntity left_paddle("left_paddle", std::make_unique<LeftPaddleController>(), &ctx);
-  left_paddle.set_side(PaddleSide::LEFT);
-  left_paddle.velocity  = Vector2({0.0f, 750.0f});
-  left_paddle.dimension = Dimension({25.0f, 180.0f});
-  left_paddle.position  = Vector2({20, (WINDOW_HEIGHT / 2.0f) - left_paddle.dimension.get_h()});
-  left_paddle.direction = -1;
+  PaddleEntity right_paddle("right_paddle", std::make_unique<RightPaddleController>(),
+                            PaddleSide::RIGHT, &ctx);
+  PaddleEntity left_paddle("left_paddle", std::make_unique<LeftPaddleController>(),
+                           PaddleSide::LEFT, &ctx);
 
   BallEntity ball("ball", &ctx);
-  ball.direction = 1;
-  ball.dimension = Dimension({15.0f, 15.0f});
-  ball.velocity  = Vector2({500.0f, 650.0f});
-  ball.position  = Vector2({(WINDOW_HEIGHT / 2.0f) - ball.dimension.get_w(),
-                            (WINDOW_WIDTH / 2.0f) - ball.dimension.get_h()});
+  ball.dimension = Dimension(15, 15);
   ball.set_left_paddle(&left_paddle);
   ball.set_right_paddle(&right_paddle);
 
@@ -49,12 +58,13 @@ int main() {
   game_state.add_entity(&left_paddle);
   game_state.add_entity(&ball);
 
-  const int FPS            = 60;
+  const int FPS            = 120;
   const int MS_FRAME_DELAY = 1000 / FPS;
 
   Uint32 frame_start;
   Uint32 last_time = SDL_GetTicks();
   int    frame_time;
+  FPSCounter fps_counter;
   while (game_state.is_running()) {
     frame_start = SDL_GetTicks();
     float dt    = (frame_start - last_time) / 1000.0f;
@@ -68,6 +78,7 @@ int main() {
     if (MS_FRAME_DELAY > frame_time) {
       SDL_Delay(MS_FRAME_DELAY - frame_time);
     }
+    fps_counter.frame_rendered();
   }
   return 0;
 }

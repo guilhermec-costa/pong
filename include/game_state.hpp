@@ -7,7 +7,6 @@
 #include <SDL2/SDL_render.h>
 #include <SDL2/SDL_ttf.h>
 #include <SDL2/SDL_video.h>
-#include <string>
 #include <vector>
 
 class GameState {
@@ -18,9 +17,6 @@ private:
   bool                     m_running;
   SDL_Event                m_event;
   std::vector<GameEntity*> m_entities;
-  TTF_Font*                m_font;
-  SDL_Texture*             m_text_texture = nullptr;
-  SDL_Rect                 m_text_rect;
 
 public:
   GameState(int window_width, int window_height);
@@ -37,5 +33,5 @@ public:
   bool          is_running();
   inline void   stop() { m_running = false; }
   void          add_entity(GameEntity* entity);
-  void          init_text(const std::string& str, int x, int y);
+  bool          is_paused = false;
 };
