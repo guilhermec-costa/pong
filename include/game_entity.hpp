@@ -16,11 +16,11 @@ public:
   inline GameContext* get_ctx() const { return m_ctx; }
 
   virtual void update(float dt) = 0;
+  virtual void render()         = 0;
 
 public:
-  Vector2      position;
-  Vector2      velocity;
-  Dimension    dimension;
-  int          direction;
-
+  Vector2   position;
+  Vector2   velocity;
+  Dimension dimension;
+  int       direction;
 };

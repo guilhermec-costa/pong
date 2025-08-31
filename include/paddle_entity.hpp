@@ -1,3 +1,5 @@
+#pragma once
+
 #include "game_entity.hpp"
 
 #include <memory>
@@ -16,6 +18,7 @@ private:
 public:
   PaddleEntity(const char* id, std::unique_ptr<PaddleController> controller, GameContext* ctx);
   void        update(float dt) override;
+  void        render() override;
   inline void set_side(PaddleSide s) { side = s; }
 
 public:

@@ -51,6 +51,12 @@ bool GameState::is_running() {
   return m_running;
 }
 
+void GameState::update(float dt) {
+  for (auto entity : m_entities) {
+    entity->update(dt);
+  }
+}
+
 void GameState::handle_events() {
   while (SDL_PollEvent(&m_event)) {
     switch (m_event.type) {
@@ -86,4 +92,13 @@ void GameState::handle_events() {
 
 void GameState::add_entity(GameEntity* entity) {
   m_entities.push_back(entity);
+}
+
+void GameState::render() {
+  SDL_SetRenderDrawColor(m_renderer, 0, 0, 0, 255);
+  SDL_RenderClear(m_renderer);
+  for (auto entity : m_entities) {
+    entity->render();
+  }
+  SDL_RenderPresent(m_renderer);
 }

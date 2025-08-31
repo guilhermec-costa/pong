@@ -25,11 +25,11 @@ public:
   void          create_renderer();
   int           init_resources();
   void          handle_events();
-  void          update();
+  void          update(float dt);
   void          render();
   GameWindow&   window();
   SDL_Renderer* renderer();
   bool          is_running();
   inline void   stop() { m_running = false; }
-  void add_entity(GameEntity* entity);
+  void          add_entity(GameEntity* entity);
 };
