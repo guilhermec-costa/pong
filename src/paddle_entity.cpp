@@ -26,28 +26,20 @@ void PaddleEntity::update(float dt) {
   m_controller->update(*this, dt);
 }
 
-void RightPaddleController::update(PaddleEntity& paddle, float dt) {
+void PaddleController::update(PaddleEntity& paddle, float dt) {
+  int        window_h = paddle.get_ctx()->window()->get_height();
   Vector2&   pos = paddle.get_position();
   Dimension& dim = paddle.get_dimension();
   int&       dir = paddle.get_direction();
+  pos.y += paddle.get_velocity().y * dir * dt;
 
-  if (pos.y < 10 || pos.y + dim.get_h() >= paddle.get_ctx()->window()->get_height() - 10) {
-    paddle.get_direction() *= -1;
+  if (pos.y < 10) {
+    pos.y = 10;
+    dir *= -1;
+  } else if(pos.y + dim.get_h() > window_h - 10) {
+    pos.y = window_h - 10 - dim.get_h();
+    dir *= -1;
   }
-
-  pos.y += paddle.get_velocity().y * paddle.get_direction() * dt;
-}
-
-void LeftPaddleController::update(PaddleEntity& paddle, float dt) {
-  Vector2&   pos = paddle.get_position();
-  Dimension& dim = paddle.get_dimension();
-  int&       dir = paddle.get_direction();
-
-  if (pos.y <= 2 || pos.y + dim.get_h() >= paddle.get_ctx()->window()->get_height() - 2) {
-    paddle.get_direction() *= -1;
-  }
-
-  pos.y += paddle.get_velocity().y * paddle.get_direction() * dt;
 }
 
 void PaddleEntity::render() {

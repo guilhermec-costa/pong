@@ -23,7 +23,7 @@ void BallEntity::update(float dt) {
     } else {
       left_paddle->score();
     }
-    reset(direction);
+    reset(-direction);
   }
 
   auto check_collision = [&](PaddleEntity* paddle, bool invert_x = false) {

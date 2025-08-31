@@ -39,14 +39,6 @@ public:
 class PaddleController {
 public:
   PaddleController() {};
-  virtual ~PaddleController()                         = default;
-  virtual void update(PaddleEntity& paddle, float dt) = 0;
-};
-
-class LeftPaddleController : public PaddleController {
-  void update(PaddleEntity& paddle, float dt) override;
-};
-
-class RightPaddleController : public PaddleController {
-  void update(PaddleEntity& paddle, float dt) override;
+  ~PaddleController() = default;
+  void update(PaddleEntity& paddle, float dt);
 };

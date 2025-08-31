@@ -44,9 +44,9 @@ int main() {
   const int   WINDOW_HEIGHT = game_state.window().get_height();
   const int   WINDOW_WIDTH  = game_state.window().get_width();
 
-  PaddleEntity right_paddle("right_paddle", std::make_unique<RightPaddleController>(),
+  PaddleEntity right_paddle("right_paddle", std::make_unique<PaddleController>(),
                             PaddleSide::RIGHT, &ctx);
-  PaddleEntity left_paddle("left_paddle", std::make_unique<LeftPaddleController>(),
+  PaddleEntity left_paddle("left_paddle", std::make_unique<PaddleController>(),
                            PaddleSide::LEFT, &ctx);
 
   BallEntity ball("ball", &ctx);
